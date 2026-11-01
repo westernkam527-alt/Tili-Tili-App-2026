@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "524519570692",
+    "project_id": "tili-tili",
+    "storage_bucket": "tili-tili.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524519570692:android:e4f72986dba0ce0ccd2451",
+        "android_client_info": {
+          "package_name": "com.tilitili.tili_tili"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB75MjBfSwTcIlaUNr1AmUC9xo7QEJvhyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
