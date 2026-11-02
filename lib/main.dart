@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const TiliTiliApp());
@@ -14,7 +15,6 @@ class TiliTiliApp extends StatelessWidget {
       title: 'Tili Tili',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
-        primaryColor: Colors.pink,
         colorScheme: const ColorScheme.dark(
           primary: Colors.pink,
           secondary: Colors.pinkAccent,
@@ -24,6 +24,8 @@ class TiliTiliApp extends StatelessWidget {
     );
   }
 }
+
+// MAIN SCREEN
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -43,29 +45,6 @@ class _MainScreenState extends State<MainScreen> {
     ProfilePage(),
   ];
 
-  final List<BottomNavigationBarItem> items = const [
-    BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: 'Home',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.people),
-      label: 'Friends',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.add_box),
-      label: 'Create',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.chat),
-      label: 'Inbox',
-    ),
-    BottomNavigationBarItem(
-      icon: Icon(Icons.person),
-      label: 'Profile',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,8 +55,8 @@ class _MainScreenState extends State<MainScreen> {
           'Tili Tili',
           style: TextStyle(
             color: Colors.pink,
-            fontSize: 25,
             fontWeight: FontWeight.bold,
+            fontSize: 25,
           ),
         ),
       ),
@@ -96,7 +75,28 @@ class _MainScreenState extends State<MainScreen> {
             selectedIndex = index;
           });
         },
-        items: items,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Friends',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_box),
+            label: 'Create',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Inbox',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
@@ -116,16 +116,16 @@ class HomePage extends StatelessWidget {
           'Welcome to Tili Tili!',
           style: TextStyle(
             fontSize: 25,
-            fontWeight: FontWeight.bold,
             color: Colors.pink,
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 20),
         const Center(
           child: Icon(
             Icons.play_circle_fill,
-            size: 100,
             color: Colors.pink,
+            size: 90,
           ),
         ),
         const SizedBox(height: 15),
@@ -146,7 +146,7 @@ class HomePage extends StatelessWidget {
         const SizedBox(height: 12),
         const VideoCard(
           username: 'Tili Tili Creator',
-          description: 'Welcome to our new social media platform!',
+          description: 'Welcome to our social media platform!',
         ),
         const VideoCard(
           username: 'New Creator',
@@ -195,26 +195,30 @@ class VideoCard extends StatelessWidget {
               ),
               child: const Icon(
                 Icons.play_circle_fill,
-                size: 75,
                 color: Colors.pink,
+                size: 75,
               ),
             ),
             const SizedBox(height: 12),
             Text(description),
-            const SizedBox(height: 10),
             Row(
               children: [
                 IconButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Like button clicked')),
+                      const SnackBar(
+                        content: Text('Like button clicked'),
+                      ),
                     );
                   },
-                  icon: const Icon(Icons.favorite_border, color: Colors.pink),
+                  icon: const Icon(
+                    Icons.favorite_border,
+                    color: Colors.pink,
+                  ),
                 ),
                 const Text('Like'),
                 const SizedBox(width: 20),
-                const Icon(Icons.comment, color: Colors.white70),
+                const Icon(Icons.comment),
                 const SizedBox(width: 6),
                 const Text('Comment'),
               ],
@@ -252,7 +256,10 @@ class _FriendsPageState extends State<FriendsPage> {
       children: [
         const Text(
           'Find Friends',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 15),
         for (final name in friends)
@@ -261,7 +268,7 @@ class _FriendsPageState extends State<FriendsPage> {
             child: ListTile(
               leading: const CircleAvatar(
                 backgroundColor: Colors.pink,
-                child: Icon(Icons.person, color: Colors.white),
+                child: Icon(Icons.person),
               ),
               title: Text(name),
               trailing: ElevatedButton(
@@ -285,10 +292,59 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 }
 
-// CREATE PAGE
+// CREATE PAGE - VIDEO GALLERY
 
-class CreatePage extends StatelessWidget {
+class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
+
+  @override
+  State<CreatePage> createState() => _CreatePageState();
+}
+
+class _CreatePageState extends State<CreatePage> {
+  final ImagePicker picker = ImagePicker();
+
+  String? videoName;
+  bool loading = false;
+
+  Future<void> chooseVideo() async {
+    try {
+      setState(() {
+        loading = true;
+      });
+
+      final XFile? video = await picker.pickVideo(
+        source: ImageSource.gallery,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+        videoName = video?.name;
+      });
+
+      if (video != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Video selected successfully!'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Video selection failed: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,21 +369,22 @@ class CreatePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Video upload will be connected in the next step.',
-                    ),
-                  ),
-                );
-              },
+              onPressed: loading ? null : chooseVideo,
               icon: const Icon(Icons.video_call),
-              label: const Text('Choose Video'),
+              label: Text(
+                loading ? 'Please wait...' : 'Choose Video',
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
+            if (videoName != null)
+              Text(
+                'Selected: $videoName',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.green),
+              ),
+            const SizedBox(height: 10),
             const Text(
-              'Video upload service will be connected next.',
+              'Select a video from your gallery.',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70),
             ),
@@ -376,16 +433,16 @@ class _InboxPageState extends State<InboxPage> {
           padding: EdgeInsets.all(15),
           child: Text(
             'Your Messages',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Expanded(
           child: messages.isEmpty
               ? const Center(
-                  child: Text(
-                    'No messages yet',
-                    style: TextStyle(color: Colors.white70),
-                  ),
+                  child: Text('No messages yet'),
                 )
               : ListView.builder(
                   itemCount: messages.length,
@@ -414,7 +471,10 @@ class _InboxPageState extends State<InboxPage> {
               ),
               IconButton(
                 onPressed: sendMessage,
-                icon: const Icon(Icons.send, color: Colors.pink),
+                icon: const Icon(
+                  Icons.send,
+                  color: Colors.pink,
+                ),
               ),
             ],
           ),
@@ -452,12 +512,17 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(dialogContext, controller.text.trim());
+                Navigator.pop(
+                  dialogContext,
+                  controller.text.trim(),
+                );
               },
               child: const Text('Save'),
             ),
@@ -484,7 +549,11 @@ class _ProfilePageState extends State<ProfilePage> {
           const CircleAvatar(
             radius: 55,
             backgroundColor: Colors.pink,
-            child: Icon(Icons.person, size: 65, color: Colors.white),
+            child: Icon(
+              Icons.person,
+              size: 65,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 18),
           Text(
